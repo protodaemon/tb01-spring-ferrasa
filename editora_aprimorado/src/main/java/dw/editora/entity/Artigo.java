@@ -12,6 +12,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+//edicoes ao arquivo
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "artigo")
@@ -29,11 +32,17 @@ public class Artigo {
     private Long id; // Boa prática: usar Long (objeto) ao invés de long (primitivo)
     
     @Column(nullable = false, length = 80)
-    private String titulo;
+    private String titulo;  
     
     @Column(nullable = false)
     private String resumo;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT TRUE") 
     private boolean publicado = true; // Já inicializamos como true no objeto
+
+    //edicao ao arquivo - atributos de relacionamento (many to one)
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "autor_id", nullable = false)
+    private Autor autor;
 }
