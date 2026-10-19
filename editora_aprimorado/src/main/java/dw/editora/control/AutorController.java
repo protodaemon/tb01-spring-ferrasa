@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import dw.editora.service.ArtigoService;
+import dw.editora.entity.Artigo;
 
 import dw.editora.entity.Autor;
 import dw.editora.service.AutorService;
@@ -25,9 +27,11 @@ public class AutorController
 {
     // A dependência agora é do Service, não do Repository
     private final AutorService service;
+    private final ArtigoService artigoService;
 
-    public AutorController(AutorService service) {
+    public AutorController(AutorService service, ArtigoService artigoService) {
         this.service = service;
+        this.artigoService = artigoService;
     }
 
     @GetMapping
@@ -60,6 +64,17 @@ public class AutorController
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/{id}/artigos")
+    public ResponseEntity<List<Artigo>> getArtigosPorAutor(@PathVariable Long id) {
+        List<Artigo> artigos = artigoService.listarPorAutor(id);
+
+        if (artigos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(artigos);
     }
 
 

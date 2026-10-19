@@ -7,15 +7,27 @@ import org.springframework.stereotype.Service;
 
 import dw.editora.entity.Artigo;
 import dw.editora.repository.ArtigoRepository;
+// listar os artigos por autor
+import dw.editora.repository.AutorRepository;
+
+import dw.editora.entity.Autor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 // @Service diz ao Spring que esta classe contém a lógica de negócio
 @Service
 public class ArtigoService {
 
     private final ArtigoRepository repository;
+    // listar os artigos por autor
+    private final AutorRepository autorRepository;
 
-    public ArtigoService(ArtigoRepository repository) {
+    public ArtigoService(
+        ArtigoRepository repository,
+        AutorRepository autorRepository) 
+    {
         this.repository = repository;
+        this.autorRepository = autorRepository;
     }
 
     public List<Artigo> listarArtigos(String titulo) {
@@ -30,7 +42,19 @@ public class ArtigoService {
     }
 
     public Artigo salvar(Artigo artigo) {
-        // Regras de negócio, validações complexas ou envio de emails entrariam aqui
+        if (artigo.getAutor() == null || artigo.getAutor().getId() == null) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Informe o ID do autor."
+            );
+        }
+
+        Autor autor = autorRepository.findById(artigo.getAutor().getId())
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Autor não encontrado."
+            ));
+
+        artigo.setAutor(autor);
+
         return repository.save(artigo);
     }
 
@@ -58,4 +82,16 @@ public class ArtigoService {
     public List<Artigo> listarPublicados() {
         return repository.findByPublicado(true);
     }
+
+    public List<Artigo> listarPorAutor(Long autorId) {
+        if (!autorRepository.existsById(autorId)) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Autor não encontrado."
+            );
+        }
+
+        return repository.findByAutorId(autorId);
+    }
+
+    
 }
