@@ -15,7 +15,7 @@ import lombok.ToString;
 import java.util.List;
 import java.util.ArrayList;
 import jakarta.persistence.OneToMany;
-import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "autor")
